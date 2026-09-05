@@ -1,6 +1,14 @@
-import { Bell } from 'lucide-react-native';
-import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
+import {
+  RefreshControl,
+  Pressable,
+  SectionList,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Bell } from 'lucide-react-native';
+
 import { AppHeader } from '../components/AppHeader';
 import { EmptyState } from '../components/EmptyState';
 import { NotificationItem } from '../components/NotificationItem';
@@ -14,19 +22,44 @@ type Props = {
 
 export function NotificationsScreen({ onOpenSnop }: Props) {
   const insets = useSafeAreaInsets();
-  const { notifications, markNotificationRead, markAllNotificationsRead, clearNotifications } =
-    useCitadel();
+
+  const {
+    notifications,
+    refreshing,
+    refresh,
+    markNotificationRead,
+    markAllNotificationsRead,
+    clearNotifications,
+  } = useCitadel();
+
+  const today = notifications.filter((notification) => {
+    const date = new Date(notification.createdAt);
+    const now = new Date();
+
+    return (
+      date.toDateString() === now.toDateString()
+    );
+  });
+
+  const older = notifications.filter((notification) => {
+    const date = new Date(notification.createdAt);
+    const now = new Date();
+
+    return (
+      date.toDateString() !== now.toDateString()
+    );
+  });
 
   const sections = [
     {
       title: 'Today',
-      data: notifications.filter((n) => n.group === 'Today'),
+      data: today,
     },
     {
-      title: 'Yesterday',
-      data: notifications.filter((n) => n.group === 'Yesterday'),
+      title: 'Earlier',
+      data: older,
     },
-  ].filter((s) => s.data.length > 0);
+  ].filter((section) => section.data.length > 0);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
@@ -35,21 +68,33 @@ export function NotificationsScreen({ onOpenSnop }: Props) {
         right={
           notifications.length ? (
             <View style={styles.actions}>
-              <Pressable onPress={markAllNotificationsRead} hitSlop={8}>
-                <Text style={styles.action}>Mark read</Text>
+              <Pressable
+                onPress={markAllNotificationsRead}
+                hitSlop={8}
+              >
+                <Text style={styles.action}>
+                  Mark read
+                </Text>
               </Pressable>
-              <Pressable onPress={clearNotifications} hitSlop={8}>
-                <Text style={styles.actionMuted}>Clear</Text>
+
+              <Pressable
+                onPress={clearNotifications}
+                hitSlop={8}
+              >
+                <Text style={styles.actionMuted}>
+                  Clear
+                </Text>
               </Pressable>
             </View>
           ) : null
         }
       />
+
       {notifications.length === 0 ? (
         <EmptyState
           icon={Bell}
           title="The citadel is quiet"
-          body="When new Snops arrive from the journals, they will gather here."
+          body="When new Snops arrive, they will gather here."
         />
       ) : (
         <SectionList
@@ -58,19 +103,44 @@ export function NotificationsScreen({ onOpenSnop }: Props) {
           contentContainerStyle={styles.list}
           stickySectionHeadersEnabled={false}
           showsVerticalScrollIndicator={false}
-          renderSectionHeader={({ section }) => <Text style={styles.group}>{section.title}</Text>}
-          renderItem={({ item }: { item: AppNotification }) => (
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={refresh}
+              tintColor={colors.accent}
+            />
+          }
+          renderSectionHeader={({ section }) => (
+            <Text style={styles.group}>
+              {section.title}
+            </Text>
+          )}
+          renderItem={({
+            item,
+          }: {
+            item: AppNotification;
+          }) => (
             <NotificationItem
               item={item}
-              onPress={() => {
-                markNotificationRead(item.id);
-                if (item.snopId) {
-                  onOpenSnop(item.snopId);
+              onPress={async () => {
+                try {
+                  await markNotificationRead(item.id);
+
+                  if (item.snopId) {
+                    onOpenSnop(item.snopId);
+                  }
+                } catch (error) {
+                  console.error(
+                    'Failed to update notification:',
+                    error,
+                  );
                 }
               }}
             />
           )}
-          ItemSeparatorComponent={() => <View style={styles.sep} />}
+          ItemSeparatorComponent={() => (
+            <View style={styles.sep} />
+          )}
         />
       )}
     </View>

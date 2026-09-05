@@ -1,11 +1,28 @@
-import type { ComponentType } from 'react';
-import { Bookmark, Clock, Info, Settings2 } from 'lucide-react-native';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Bookmark,
+  Clock,
+  Info,
+  Settings2,
+} from 'lucide-react-native';
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { AppHeader } from '../components/AppHeader';
 import { ProfileStat } from '../components/ProfileStat';
 import { useCitadel } from '../context/CitadelContext';
-import { colors, fonts, layout, radii, spacing } from '../theme/theme';
+import {
+  colors,
+  fonts,
+  layout,
+  radii,
+  spacing,
+} from '../theme/theme';
 
 type Props = {
   onOpenSaved: () => void;
@@ -14,37 +31,113 @@ type Props = {
   onOpenAbout: () => void;
 };
 
-export function ProfileScreen({ onOpenSaved, onOpenHistory, onOpenPreferences, onOpenAbout }: Props) {
+export function ProfileScreen({
+  onOpenSaved,
+  onOpenHistory,
+  onOpenPreferences,
+  onOpenAbout,
+}: Props) {
   const insets = useSafeAreaInsets();
-  const { savedIds, snopsReadCount } = useCitadel();
+
+  const {
+    savedCount,
+    readCount,
+    snops,
+  } = useCitadel();
+
+  const topicCount = new Set(
+    snops.map((snop) => snop.category),
+  ).size;
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top }]}>
+    <View
+      style={[
+        styles.root,
+        { paddingTop: insets.top },
+      ]}
+    >
       <AppHeader title="Profile" />
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[
+          styles.content,
+          {
+            paddingBottom:
+              insets.bottom + spacing.xxxl,
+          },
+        ]}
+      >
         <View style={styles.identity}>
           <View style={styles.mark}>
-            <Text style={styles.markLetter}>C</Text>
+            <Text style={styles.markLetter}>
+              C
+            </Text>
           </View>
+
           <View>
-            <Text style={styles.name}>Caveman</Text>
-            <Text style={styles.tag}>Reader in the citadel</Text>
+            <Text style={styles.name}>
+              Caveman
+            </Text>
+
+            <Text style={styles.tag}>
+              Reader in the citadel
+            </Text>
           </View>
         </View>
 
         <View style={styles.stats}>
-          <ProfileStat label="Snops Read" value={snopsReadCount} />
-          <ProfileStat label="Saved" value={savedIds.size} />
-          <ProfileStat label="Topics" value={6} />
+          <ProfileStat
+            label="Snops Read"
+            value={readCount}
+          />
+
+          <ProfileStat
+            label="Saved"
+            value={savedCount}
+          />
+
+          <ProfileStat
+            label="Topics"
+            value={topicCount}
+          />
         </View>
 
-        <Text style={styles.sectionLabel}>Library</Text>
-        <Row icon={Bookmark} title="Saved Snops" hint="Artifacts you kept" onPress={onOpenSaved} />
-        <Row icon={Clock} title="Reading History" hint="Recently opened" onPress={onOpenHistory} />
+        <Text style={styles.sectionLabel}>
+          Library
+        </Text>
 
-        <Text style={styles.sectionLabel}>Citadel</Text>
-        <Row icon={Settings2} title="Preferences" hint="Reading and appearance" onPress={onOpenPreferences} />
-        <Row icon={Info} title="About Caveman Citadel" hint="What this place is" onPress={onOpenAbout} />
+        <Row
+          icon={Bookmark}
+          title="Saved Snops"
+          hint="Artifacts you kept"
+          onPress={onOpenSaved}
+        />
+
+        <Row
+          icon={Clock}
+          title="Reading History"
+          hint="Recently opened"
+          onPress={onOpenHistory}
+        />
+
+        <Text style={styles.sectionLabel}>
+          Citadel
+        </Text>
+
+        <Row
+          icon={Settings2}
+          title="Preferences"
+          hint="Reading and appearance"
+          onPress={onOpenPreferences}
+        />
+
+        <Row
+          icon={Info}
+          title="About Caveman Citadel"
+          hint="What this place is"
+          onPress={onOpenAbout}
+        />
       </ScrollView>
     </View>
   );
@@ -56,19 +149,35 @@ function Row({
   hint,
   onPress,
 }: {
-  icon: ComponentType<{ size?: number; color?: string; strokeWidth?: number }>;
+  icon: typeof Bookmark;
   title: string;
   hint: string;
   onPress: () => void;
 }) {
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}>
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.row,
+        pressed && styles.rowPressed,
+      ]}
+    >
       <View style={styles.rowIcon}>
-        <Icon size={18} color={colors.accent} strokeWidth={1.8} />
+        <Icon
+          size={18}
+          color={colors.accent}
+          strokeWidth={1.8}
+        />
       </View>
+
       <View style={styles.rowCopy}>
-        <Text style={styles.rowTitle}>{title}</Text>
-        <Text style={styles.rowHint}>{hint}</Text>
+        <Text style={styles.rowTitle}>
+          {title}
+        </Text>
+
+        <Text style={styles.rowHint}>
+          {hint}
+        </Text>
       </View>
     </Pressable>
   );
@@ -81,7 +190,6 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: layout.headerPadX,
-    paddingBottom: spacing.xxxl,
   },
   identity: {
     flexDirection: 'row',
@@ -135,7 +243,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
     paddingVertical: spacing.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth:
+      StyleSheet.hairlineWidth,
     borderBottomColor: colors.border,
   },
   rowPressed: {

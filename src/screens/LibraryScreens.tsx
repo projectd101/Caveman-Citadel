@@ -1,12 +1,28 @@
-import { Bookmark, Clock } from 'lucide-react-native';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Bookmark,
+  Clock,
+} from 'lucide-react-native';
+import {
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'lucide-react-native';
+
 import { AppHeader } from '../components/AppHeader';
 import { EmptyState } from '../components/EmptyState';
 import { useCitadel } from '../context/CitadelContext';
-import { snopsById } from '../data/mockSnops';
-import { colors, fonts, layout, radii, spacing } from '../theme/theme';
+import {
+  colors,
+  fonts,
+  layout,
+  radii,
+  spacing,
+} from '../theme/theme';
 import type { Snop } from '../types';
 
 type ListProps = {
@@ -19,31 +35,87 @@ type ListProps = {
   emptyIcon: typeof Bookmark;
 };
 
-function SnopListScreen({ title, emptyTitle, emptyBody, snops, onBack, onOpenSnop, emptyIcon }: ListProps) {
+function SnopListScreen({
+  title,
+  emptyTitle,
+  emptyBody,
+  snops,
+  onBack,
+  onOpenSnop,
+  emptyIcon,
+}: ListProps) {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top }]}>
+    <View
+      style={[
+        styles.root,
+        { paddingTop: insets.top },
+      ]}
+    >
       <View style={styles.top}>
-        <Pressable onPress={onBack} style={styles.back} accessibilityLabel="Back">
-          <ArrowLeft size={20} color={colors.text} />
+        <Pressable
+          onPress={onBack}
+          style={styles.back}
+          accessibilityLabel="Back"
+        >
+          <ArrowLeft
+            size={20}
+            color={colors.text}
+          />
         </Pressable>
-        <AppHeader title={title} style={styles.header} />
+
+        <AppHeader
+          title={title}
+          style={styles.header}
+        />
       </View>
+
       {snops.length === 0 ? (
-        <EmptyState icon={emptyIcon} title={emptyTitle} body={emptyBody} />
+        <EmptyState
+          icon={emptyIcon}
+          title={emptyTitle}
+          body={emptyBody}
+        />
       ) : (
-        <ScrollView contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={[
+            styles.list,
+            {
+              paddingBottom:
+                insets.bottom + spacing.xxxl,
+            },
+          ]}
+          showsVerticalScrollIndicator={false}
+        >
           {snops.map((snop) => (
             <Pressable
               key={snop.id}
               onPress={() => onOpenSnop(snop.id)}
-              style={({ pressed }) => [styles.item, pressed && styles.pressed]}
+              style={({ pressed }) => [
+                styles.item,
+                pressed && styles.pressed,
+              ]}
             >
-              <View style={[styles.swatch, { backgroundColor: snop.accentColor }]} />
+              <View
+                style={[
+                  styles.swatch,
+                  {
+                    backgroundColor:
+                      snop.accentColor,
+                  },
+                ]}
+              />
+
               <View style={styles.copy}>
-                <Text style={styles.cat}>{snop.category}</Text>
-                <Text style={styles.title}>{snop.title}</Text>
+                <Text style={styles.cat}>
+                  {snop.category}
+                </Text>
+
+                <Text style={styles.title}>
+                  {snop.title}
+                </Text>
+
                 <Text style={styles.meta}>
                   {snop.source} · {snop.readingTime} min
                 </Text>
@@ -64,13 +136,17 @@ export function SavedSnopsScreen({
   onOpenSnop: (id: string) => void;
 }) {
   const { savedIds, snops } = useCitadel();
-  const saved = snops.filter((s) => savedIds.has(s.id));
+
+  const saved = snops.filter((snop) =>
+    savedIds.has(snop.id),
+  );
+
   return (
     <SnopListScreen
       title="Saved Snops"
       emptyIcon={Bookmark}
       emptyTitle="Nothing saved yet"
-      emptyBody="Bookmark a Snop and it will wait here like a stone on a shelf."
+      emptyBody="Bookmark a Snop and it will live here."
       snops={saved}
       onBack={onBack}
       onOpenSnop={onOpenSnop}
@@ -85,14 +161,20 @@ export function ReadingHistoryScreen({
   onBack: () => void;
   onOpenSnop: (id: string) => void;
 }) {
-  const { readIds } = useCitadel();
-  const history = readIds.map((id) => snopsById[id]).filter(Boolean);
+  const { readIds, snops } = useCitadel();
+
+  const history = readIds
+    .map((id) =>
+      snops.find((snop) => snop.id === id),
+    )
+    .filter(Boolean) as Snop[];
+
   return (
     <SnopListScreen
       title="Reading History"
       emptyIcon={Clock}
       emptyTitle="No footsteps yet"
-      emptyBody="Open a Snop from Home and it will appear in this trail."
+      emptyBody="Open a Snop and it will appear in this trail."
       snops={history}
       onBack={onBack}
       onOpenSnop={onOpenSnop}
@@ -122,14 +204,14 @@ const styles = StyleSheet.create({
   },
   list: {
     paddingHorizontal: layout.headerPadX,
-    paddingBottom: spacing.xxxl,
     gap: spacing.sm,
   },
   item: {
     flexDirection: 'row',
     gap: spacing.md,
     paddingVertical: spacing.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth:
+      StyleSheet.hairlineWidth,
     borderBottomColor: colors.border,
   },
   pressed: {

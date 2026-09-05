@@ -2,10 +2,14 @@ import type { ComponentType } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts, radii, spacing } from '../theme/theme';
 
-type IconProps = { size?: number; color?: string; strokeWidth?: number };
+type IconProps = {
+  size?: number;
+  color?: string;
+  strokeWidth?: number;
+};
 
 type Props = {
-  icon: ComponentType<IconProps>;
+  icon?: ComponentType<IconProps>;
   title: string;
   body: string;
 };
@@ -14,8 +18,17 @@ export function EmptyState({ icon: Icon, title, body }: Props) {
   return (
     <View style={styles.wrap}>
       <View style={styles.iconBox}>
-        <Icon size={22} color={colors.accent} strokeWidth={1.7} />
+        {Icon ? (
+          <Icon
+            size={22}
+            color={colors.accent}
+            strokeWidth={1.7}
+          />
+        ) : (
+          <Text style={styles.fallbackIcon}>·</Text>
+        )}
       </View>
+
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.body}>{body}</Text>
     </View>
@@ -28,6 +41,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xxl,
     paddingVertical: spacing.xxxl,
   },
+
   iconBox: {
     width: 52,
     height: 52,
@@ -39,6 +53,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: spacing.lg,
   },
+
+  fallbackIcon: {
+    fontFamily: fonts.displayBold,
+    fontSize: 28,
+    lineHeight: 28,
+    color: colors.accent,
+  },
+
   title: {
     fontFamily: fonts.display,
     fontSize: 20,
@@ -46,6 +68,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: spacing.sm,
   },
+
   body: {
     fontFamily: fonts.body,
     fontSize: 14,

@@ -25,31 +25,28 @@ export type TileTreatment = 'solid' | 'inset' | 'band';
 export type Snop = {
   id: string;
   title: string;
-  category: Category;
-  source: Source;
+  category: string;
+  source: string;
   summary: string;
   content: string;
-  whyItMatters: string;
+  whyItMatters: string | null;
   readingTime: number;
-  date: string;
+  publishedAt: string;
+  sourceUrl: string | null;
   accentColor: string;
   featured: boolean;
-  saved: boolean;
   size: TileSize;
   treatment: TileTreatment;
 };
 
-export type NotificationKind = 'new' | 'featured' | 'category';
-
 export type AppNotification = {
   id: string;
-  kind: NotificationKind;
+  kind: 'new' | 'featured' | 'category';
   title: string;
   description: string;
-  time: string;
-  group: 'Today' | 'Yesterday';
+  createdAt: string;
   unread: boolean;
-  snopId?: string;
+  snopId: string | null;
 };
 
 export type RootStackParamList = {
