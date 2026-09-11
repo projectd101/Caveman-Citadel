@@ -39,6 +39,18 @@ export type Snop = {
   treatment: TileTreatment;
 };
 
+export type Reel = {
+  id: string;
+  projectHandle: string;
+  projectLabel: string;
+  category: string;
+  mediaUrl: string;
+  caption: string;
+  likes: number;
+  comments: number;
+  accentColor: string;
+};
+
 export type AppNotification = {
   id: string;
   kind: 'new' | 'featured' | 'category';
@@ -60,6 +72,7 @@ export type RootStackParamList = {
 
 export type TabParamList = {
   Home: undefined;
+  Reels: undefined;
   Notifications: undefined;
   Profile: undefined;
 };

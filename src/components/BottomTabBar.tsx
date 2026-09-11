@@ -1,11 +1,12 @@
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { Bell, House, UserRound } from 'lucide-react-native';
+import { Bell, Clapperboard, House, UserRound } from 'lucide-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, layout, radii } from '../theme/theme';
 
 const ICONS = {
   Home: House,
+  Reels: Clapperboard,
   Notifications: Bell,
   Profile: UserRound,
 } as const;

@@ -8,6 +8,7 @@ import { ReadingHistoryScreen, SavedSnopsScreen } from '../screens/LibraryScreen
 import { NotificationsScreen } from '../screens/NotificationsScreen';
 import { AboutScreen, PreferencesScreen } from '../screens/PlaceholderScreens';
 import { ProfileScreen } from '../screens/ProfileScreen';
+import { ReelsScreen } from '../screens/ReelsScreen';
 import { SnopDetailScreen } from '../screens/SnopDetailScreen';
 import { colors } from '../theme/theme';
 import type { RootStackParamList, TabParamList } from '../types';
@@ -74,6 +75,7 @@ function Tabs() {
       }}
     >
       <Tab.Screen name="Home" component={HomeRoute} />
+      <Tab.Screen name="Reels" component={ReelsScreen} />
       <Tab.Screen name="Notifications" component={NotificationsRoute} />
       <Tab.Screen name="Profile" component={ProfileRoute} />
     </Tab.Navigator>
